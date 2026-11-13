@@ -21,6 +21,8 @@ services:
       - key: MODEL_PATH
         value: ../ml/models/random_forest.joblib
         # Path to trained ML model (relative to backend/)
+      - key: COTTON_MODEL_PATH
+        value: ml_models/cotton_model.pkl
       - key: SCALER_PATH
         value: ../ml/models/scaler.joblib
       - key: ENVIRONMENT

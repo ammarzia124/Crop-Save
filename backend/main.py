@@ -10,7 +10,9 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from routes import predict, advisory, history
+from routes.drought import router as drought_router
+from routes.crop import router as crop_router
+from routes.combined import router as combined_router
 from services.ml_service import model_loaded
 
 load_dotenv()
@@ -27,9 +29,14 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# ponytail: read from env, fallback to safe defaults
+cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
+origins = [origin.strip() for origin in cors_origins]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
+    allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -42,6 +49,6 @@ def health():
 
 
 # Include routers
-app.include_router(predict.router)
-app.include_router(advisory.router)
-app.include_router(history.router)
+app.include_router(drought_router, prefix="/drought", tags=["Drought Prediction"])
+app.include_router(crop_router, prefix="/crop", tags=["Cotton Yield"])
+app.include_router(combined_router, prefix="/combined", tags=["Combined Analysis"])
