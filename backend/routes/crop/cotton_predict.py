@@ -2,6 +2,7 @@
 from datetime import date, datetime, timedelta
 from fastapi import APIRouter, HTTPException
 
+from logger import logger
 from models.schemas import CottonPredictRequest, CottonPredictResponse
 from services import cotton_model
 from services.ml_service import predict_risk
@@ -64,7 +65,7 @@ async def predict_cotton_yield(request: CottonPredictRequest):
                 # LOW or other: 0%
 
             except Exception as e:
-                print(f"[cotton_predict] Drought risk fetch failed: {e}")
+                logger.warning(f"Drought risk fetch failed: {e}")
                 # Continue with UNKNOWN risk, no adjustment
 
         # Calculate adjusted yield

@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from logger import logger
 from models.schemas import PredictRequest, PredictResponse
 from services.ml_service import predict_risk
 from services.nasa_api import get_last_30_days_data, get_last_12_months_data
@@ -23,19 +24,19 @@ SCALER_PATH = os.getenv("SCALER_PATH", str(ROOT.parent / "ml" / "models" / "scal
 
 # Load model and scaler once at startup
 try:
-    print(f"Loading ML model from: {MODEL_PATH}")
+    logger.info(f"Loading ML model from: {MODEL_PATH}")
     model = joblib.load(MODEL_PATH)
-    print("Model loaded successfully")
+    logger.info("Drought model loaded successfully")
 except FileNotFoundError:
-    print(f"Model file not found at {MODEL_PATH}")
+    logger.warning(f"Model file not found at {MODEL_PATH}")
     model = None
 
 try:
-    print(f"Loading scaler from: {SCALER_PATH}")
+    logger.info(f"Loading scaler from: {SCALER_PATH}")
     scaler = joblib.load(SCALER_PATH)
-    print("Scaler loaded successfully")
+    logger.info("Scaler loaded successfully")
 except FileNotFoundError:
-    print(f"Scaler file not found at {SCALER_PATH}. Predictions will use unscaled features.")
+    logger.warning(f"Scaler file not found at {SCALER_PATH}. Predictions will use unscaled features.")
     scaler = None
 
 
@@ -43,22 +44,21 @@ except FileNotFoundError:
 @limiter.limit("10/minute")
 def predict(request: Request, req: PredictRequest):
     """Predict 30-day drought risk for a district location."""
-    print(f"\n{'='*60}")
-    print(f"PREDICTION REQUEST: lat={req.lat}, lon={req.lon}")
+    logger.info(f"Drought prediction request: lat={req.lat}, lon={req.lon}")
     if req.district_name:
-        print(f"District: {req.district_name}")
+        logger.info(f"District: {req.district_name}")
 
     try:
         climate_data = get_last_30_days_data(req.lat, req.lon)
     except Exception as exc:
-        print(f"NASA API Error: {exc}")
+        logger.error(f"NASA API Error: {exc}")
         raise HTTPException(status_code=503, detail="NASA data temporarily unavailable") from exc
 
     try:
         monthly_data = get_last_12_months_data(req.lat, req.lon)
         prev_month_rainfall = monthly_data[-2]["total_rainfall_mm"] if len(monthly_data) >= 2 else 0
     except Exception as exc:
-        print(f"Could not fetch monthly data, using 0 for prev_month_rainfall: {exc}")
+        logger.warning(f"Could not fetch monthly data, using 0 for prev_month_rainfall: {exc}")
         prev_month_rainfall = 0
 
     current_month = date.today().month
@@ -82,17 +82,17 @@ def predict(request: Request, req: PredictRequest):
     if model is not None:
         features_array = np.array(features).reshape(1, -1)
         if scaler is not None:
-            print("Applying scaler transformation...")
+            logger.debug("Applying scaler transformation")
             features_array = scaler.transform(features_array)
         try:
             prediction_proba = model.predict_proba(features_array)[0]
             drought_probability = prediction_proba[1] if len(prediction_proba) > 1 else prediction_proba[0]
             risk_score = int(drought_probability * 100)
         except Exception as exc:
-            print(f"Prediction error: {exc}")
+            logger.error(f"Prediction error: {exc}")
             raise HTTPException(status_code=500, detail="Prediction failed due to an internal error") from exc
     else:
-        print("Model file missing; using rule-based fallback scoring.")
+        logger.warning("Model file missing; using rule-based fallback scoring")
         risk_score, _, _ = predict_risk(feature_dict)
 
     if 0 <= risk_score <= 30:

@@ -7,6 +7,8 @@ from typing import List, Literal
 from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel, Field
 
+from logger import logger
+
 router = APIRouter()
 
 
@@ -191,7 +193,7 @@ def get_advisory(
             detail="Invalid risk level. Must be LOW, MEDIUM, or HIGH."
         )
 
-    print(f"Advisory requested for risk level: {risk_level} in {lang.upper()}")
+    logger.info(f"Advisory requested for risk level: {risk_level} in {lang.upper()}")
 
     advice_items = [AdviceItem(**item) for item in advice_dict[risk_level]]
     payload = AdvisoryResponse(
@@ -227,7 +229,7 @@ def get_advisory_languages(
             detail="Invalid risk level. Must be LOW, MEDIUM, or HIGH."
         )
 
-    print(f"Advisory requested: {risk_level} in {lang.upper()}")
+    logger.info(f"Advisory requested: {risk_level} in {lang.upper()}")
 
     advice_items = [AdviceItem(**item) for item in advice_dict[risk_level]]
     return {

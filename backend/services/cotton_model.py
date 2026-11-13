@@ -10,6 +10,8 @@ from typing import Optional
 import joblib
 import pandas as pd
 
+from logger import logger
+
 ROOT = Path(__file__).resolve().parent.parent  # backend/
 MODEL_PATH = Path(os.getenv("COTTON_MODEL_PATH", ROOT / "ml_models" / "cotton_model.pkl"))
 
@@ -19,15 +21,15 @@ model_loaded = False
 
 try:
     if MODEL_PATH.exists():
-        print(f"[cotton_model] Loading model from {MODEL_PATH}")
+        logger.info(f"Loading cotton model from {MODEL_PATH}")
         BUNDLE = joblib.load(MODEL_PATH)
         model_loaded = True
-        print(f"[cotton_model] Model loaded successfully. Features: {len(BUNDLE.get('features', []))}")
+        logger.info(f"Cotton model loaded successfully. Features: {len(BUNDLE.get('features', []))}")
     else:
-        print(f"[cotton_model] WARNING: Model not found at {MODEL_PATH}")
-        print("[cotton_model] Cotton endpoints will return 503 Service Unavailable")
+        logger.warning(f"Cotton model not found at {MODEL_PATH}")
+        logger.warning("Cotton endpoints will return 503 Service Unavailable")
 except Exception as e:
-    print(f"[cotton_model] ERROR loading model: {e}")
+    logger.error(f"ERROR loading cotton model: {e}")
     BUNDLE = None
     model_loaded = False
 
@@ -50,9 +52,9 @@ def load_cotton_model() -> dict:
     if not MODEL_PATH.exists():
         raise FileNotFoundError(f"Cotton model not found at {MODEL_PATH}")
 
-    print(f"[cotton_model] Loading from {MODEL_PATH}")
+    logger.info(f"Loading cotton model from {MODEL_PATH}")
     bundle = joblib.load(MODEL_PATH)
-    print(f"[cotton_model] Loaded. Features: {len(bundle.get('features', []))}")
+    logger.info(f"Cotton model loaded. Features: {len(bundle.get('features', []))}")
     return bundle
 
 
@@ -84,7 +86,7 @@ def predict_cotton_yield(
     if BUNDLE is None:
         raise ValueError("Cotton model not loaded. Check model file exists.")
 
-    print(f"[cotton_model] Predicting for: {location}, {genotype}, water={water_supply_pct}%, N={n_rate_kg_ha}")
+    logger.debug(f"Predicting cotton yield for: {location}, {genotype}, water={water_supply_pct}%, N={n_rate_kg_ha}")
 
     # Extract bundle components
     ensemble = BUNDLE["ensemble"]
@@ -132,7 +134,7 @@ def predict_cotton_yield(
     if n_rate_kg_ha > 280:
         advice.append(f"Nitrogen rate is {n_rate_kg_ha} kg/ha. Consider reducing to avoid diminishing returns.")
 
-    print(f"[cotton_model] Predicted yield: {prediction:.2f} kg/ha")
+    logger.info(f"Cotton yield prediction: {prediction:.2f} kg/ha")
 
     return {
         "predicted_yield": float(prediction),

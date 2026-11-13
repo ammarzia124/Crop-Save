@@ -3,6 +3,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException
 
+from logger import logger
 from models.schemas import CombinedRequest, CombinedResponse
 from services.nasa_api import get_last_30_days_data, get_last_12_months_data
 from services.cotton_model import predict_cotton_yield, model_loaded
@@ -45,7 +46,7 @@ async def combined_analysis(request: CombinedRequest):
             "prediction_date": date.today().isoformat(),
         }
     except Exception as e:
-        print(f"Drought prediction failed: {e}")
+        logger.error(f"Drought prediction failed: {e}")
         drought_result = {"error": str(e)}
 
     # 2. Cotton prediction

@@ -14,6 +14,8 @@ import httpx
 import numpy as np
 import pandas as pd
 
+from logger import logger
+
 POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 PARAMS = ["PRECTOTCORR", "GWETROOT", "T2M_MAX", "RH2M"]
 FILL_VALUE = -999  # NASA POWER marks missing values with -999
@@ -84,7 +86,7 @@ def get_last_30_days_data(lat: float, lon: float) -> dict:
     """
     end = date.today()
     start = end - timedelta(days=30)
-    print(f"Fetching 30-day data from {start} to {end}")
+    logger.debug(f"Fetching 30-day data from {start} to {end}")
 
     data = fetch_climate_data(lat, lon, start, end)
 
@@ -104,7 +106,7 @@ def get_last_12_months_data(lat: float, lon: float) -> list:
     """
     end = date.today()
     start = end - timedelta(days=365)
-    print(f"Fetching 12-month data from {start} to {end}")
+    logger.debug(f"Fetching 12-month data from {start} to {end}")
 
     df = fetch_daily(lat, lon, start, end)
 
