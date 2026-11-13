@@ -1,7 +1,9 @@
 """Combined drought + cotton analysis endpoint."""
 from datetime import date
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from logger import logger
 from models.schemas import CombinedRequest, CombinedResponse
@@ -9,10 +11,12 @@ from services.nasa_api import get_last_30_days_data, get_last_12_months_data
 from services.cotton_model import predict_cotton_yield, model_loaded
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.post("/analysis", response_model=CombinedResponse)
-async def combined_analysis(request: CombinedRequest):
+@limiter.limit("30/minute")
+async def combined_analysis(http_request: Request, request: CombinedRequest):
     """Get drought + cotton predictions with combined advice."""
 
     # 1. Drought prediction

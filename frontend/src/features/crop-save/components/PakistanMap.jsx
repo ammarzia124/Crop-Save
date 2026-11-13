@@ -24,6 +24,8 @@ const PAKISTAN_DISTRICTS = [
   { name: "Dera Ghazi Khan", lat: 30.0588, lon: 70.6399 },
   { name: "Muzaffarabad", lat: 34.3700, lon: 73.4710 },
   { name: "Gilgit", lat: 35.9221, lon: 74.3085 },
+  { name: "Khanpur", lat: 28.6414, lon: 70.6567 },
+  { name: "Rajanpur", lat: 29.1044, lon: 70.3301 },
 ];
 
 const RISK_STYLES = {
@@ -281,4 +283,5 @@ const PakistanMap = ({
   );
 };
 
+export { PAKISTAN_DISTRICTS };
 export default PakistanMap;

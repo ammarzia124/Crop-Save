@@ -1,6 +1,8 @@
 """Cotton yield prediction endpoint with drought adjustment."""
 from datetime import date, datetime, timedelta
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from logger import logger
 from models.schemas import CottonPredictRequest, CottonPredictResponse
@@ -10,10 +12,12 @@ from services.nasa_api import fetch_daily
 from services.feature_builder import build_features, HISTORY_DAYS
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.post("/cotton/predict", response_model=CottonPredictResponse)
-async def predict_cotton_yield(request: CottonPredictRequest):
+@limiter.limit("30/minute")
+async def predict_cotton_yield(http_request: Request, request: CottonPredictRequest):
     """Predict cotton fiber yield with optional drought adjustment.
 
     If district_lat and district_lon are provided, fetches NASA POWER data

@@ -7,6 +7,7 @@ import {
 import { cottonYieldApi } from '../../lib/cottonYieldApi';
 import { supabase } from '../../lib/supabase';
 import Card from '../../components/Card';
+import { PAKISTAN_DISTRICTS } from '../../features/crop-save/components/PakistanMap';
 
 const LOCATIONS  = ['Multan', 'Faisalabad', 'Khanpur', 'Rajanpur'];
 const VARIETIES  = ['CIM-663', 'CKC-6', 'NIAB-878', 'MNH-1020', 'BS-15'];
@@ -127,12 +128,18 @@ export default function PredictPage() {
   const predict = async () => {
     setLoading(true); setError(null); setResult(null); setSaved(false);
     try {
+      const district = PAKISTAN_DISTRICTS.find(d => d.name === loc);
+      const lat = district?.lat || 30.1575;
+      const lon = district?.lon || 71.5249;
+
       const res = await cottonYieldApi.post('/predict', {
         location:         loc,
         genotype:         vari,
         water_supply_pct: irr.pct,
         n_rate_kg_ha:     nit.kg,
         soil_type:        soil,
+        lat,
+        lon,
       });
       setResult(res.data);
     } catch (e) {
