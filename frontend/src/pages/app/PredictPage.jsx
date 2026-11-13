@@ -9,6 +9,14 @@ import { supabase } from '../../lib/supabase';
 import Card from '../../components/Card';
 import { PAKISTAN_DISTRICTS } from '../../features/crop-save/components/PakistanMap';
 
+// DEBUG: Check what URL is being used
+console.log('🌐 Cotton API URL:', cottonYieldApi.defaults.baseURL);
+console.log('🌐 Environment:', import.meta.env.MODE);
+console.log('🌐 All VITE vars:', {
+  COTTON: import.meta.env.VITE_COTTON_YIELD_API_URL,
+  CROPSAVE: import.meta.env.VITE_CROPSAVE_API_URL
+});
+
 const LOCATIONS  = ['Multan', 'Faisalabad', 'Khanpur', 'Rajanpur'];
 const VARIETIES  = ['CIM-663', 'CKC-6', 'NIAB-878', 'MNH-1020', 'BS-15'];
 const IRRIGATION = [
