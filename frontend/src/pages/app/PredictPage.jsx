@@ -141,6 +141,7 @@ export default function PredictPage() {
         lat,
         lon,
       });
+      console.log('API Response:', res.data);
       setResult(res.data);
     } catch (e) {
       if (e.response?.data?.detail) setError(JSON.stringify(e.response.data.detail));
@@ -155,7 +156,7 @@ export default function PredictPage() {
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setSaving(false); setError('Please log in to save.'); return; }
-    const y     = result.predicted_fiber_yield_kg_ha;
+    const y     = result.predicted_fiber_yield_kg_ha ?? result.predicted_yield ?? result.fiber_yield ?? result.yield ?? 0;
     const grade = getGrade(y).label;
     const { error: err } = await supabase.from('predictions').insert({
       user_id:          user.id,
@@ -313,7 +314,7 @@ export default function PredictPage() {
         {/* Result card */}
         <AnimatePresence>
           {result && (() => {
-            const y     = result.predicted_fiber_yield_kg_ha;
+            const y     = result.predicted_fiber_yield_kg_ha ?? result.predicted_yield ?? result.fiber_yield ?? result.yield ?? 0;
             const grade = getGrade(y);
             const fill  = Math.min(100, Math.max(0, (y / 1200) * 100));
             return (
