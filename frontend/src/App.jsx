@@ -22,11 +22,11 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/"       element={<Navigate to="/app/home" replace />} />
-          <Route path="/splash" element={<Navigate to="/app/home" replace />} />
-          <Route path="/login"  element={<Navigate to="/app/home" replace />} />
-          <Route path="/signup" element={<Navigate to="/app/home" replace />} />
-          <Route path="/forgot" element={<Navigate to="/app/home" replace />} />
+          <Route path="/"       element={<Navigate to="/splash" replace />} />
+          <Route path="/splash" element={<SplashPage />} />
+          <Route path="/login"  element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot" element={<ForgotPage />} />
 
           <Route
             path="/app"
