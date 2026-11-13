@@ -1,0 +1,23 @@
+Hey Muavia! 👋
+
+Backend is READY for integration:
+
+🔗 Local: http://localhost:8000
+🔗 Docs: http://localhost:8000/docs
+🔗 Production: https://cropsave-backend.onrender.com
+
+3 Endpoints ready:
+✅ /drought/predict
+✅ /crop/cotton/predict
+✅ /combined/analysis (NEW - gives both + advice)
+
+Quick Start:
+1. Update .env: VITE_API_BASE_URL=http://localhost:8000
+2. Replace old fetch URLs with: ${BASE_URL}/drought/predict
+3. Test at /docs
+
+Full guide: MUAVIA_INTEGRATION.md
+
+Hit me up if anything breaks! 🚀
+
+- Ammar
