@@ -152,9 +152,16 @@ export default function PredictPage() {
       console.log('API Response:', res.data);
       setResult(res.data);
     } catch (e) {
-      if (e.response?.data?.detail) setError(JSON.stringify(e.response.data.detail));
-      else if (e.code === 'ERR_NETWORK') setError(`Network error: cannot reach the server at ${cottonYieldApi.defaults.baseURL}`);
-      else setError(e.message || 'Could not reach the server.');
+      console.error('Prediction error:', e);
+      if (e.code === 'ECONNABORTED') {
+        setError('Request timeout - backend is taking too long. Please try again.');
+      } else if (e.response?.data?.detail) {
+        setError(JSON.stringify(e.response.data.detail));
+      } else if (e.code === 'ERR_NETWORK') {
+        setError('Network error. Backend might have CORS restrictions.');
+      } else {
+        setError(e.message || 'Could not reach the server.');
+      }
     }
     setLoading(false);
   };
