@@ -14,8 +14,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: CORS_ORIGINS
-        value: "*"
-        # For production, update to: https://cropsave.vercel.app
+        value: "https://cropsave.vercel.app,http://localhost:5173,http://localhost:3000"
       - key: NASA_POWER_BASE_URL
         value: https://power.larc.nasa.gov/api/temporal/daily/point
       - key: MODEL_PATH

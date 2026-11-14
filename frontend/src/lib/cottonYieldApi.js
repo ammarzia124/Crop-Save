@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// CORS Proxy to access Railway backend from Vercel
-// Using allorigins.win as proxy (free, no signup)
-const RAILWAY_BACKEND = 'https://backend-production-4f60.up.railway.app';
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+// Use env var or fallback to localhost
+const API_URL = import.meta.env.VITE_COTTON_YIELD_API_URL || 'http://localhost:8000';
 
-export const COTTON_YIELD_API_URL = CORS_PROXY + encodeURIComponent(RAILWAY_BACKEND);
+export const COTTON_YIELD_API_URL = API_URL;
 
 export const cottonYieldApi = axios.create({
   baseURL: COTTON_YIELD_API_URL,
@@ -15,4 +13,4 @@ export const cottonYieldApi = axios.create({
   },
 });
 
-console.log('🌐 Cotton API URL (with CORS proxy):', COTTON_YIELD_API_URL);
+console.log('🌐 Cotton API URL:', COTTON_YIELD_API_URL);
