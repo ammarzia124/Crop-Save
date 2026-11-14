@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-export const COTTON_YIELD_API_URL = import.meta.env.VITE_COTTON_YIELD_API_URL
-  || import.meta.env.VITE_API_URL
-  || 'http://localhost:8000';
+// Hardcoded backend URL - env vars aren't reliable in Vercel builds
+export const COTTON_YIELD_API_URL = 'https://backend-production-4f60.up.railway.app';
 
 export const cottonYieldApi = axios.create({
   baseURL: COTTON_YIELD_API_URL,
