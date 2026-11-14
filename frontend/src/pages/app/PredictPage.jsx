@@ -150,6 +150,8 @@ export default function PredictPage() {
         lon,
       });
       console.log('API Response:', res.data);
+      console.log('🎯 predicted_fiber_yield_kg_ha:', res.data.predicted_fiber_yield_kg_ha);
+      console.log('🎯 Full result keys:', Object.keys(res.data));
       setResult(res.data);
     } catch (e) {
       console.error('Prediction error:', e);
@@ -330,6 +332,8 @@ export default function PredictPage() {
         <AnimatePresence>
           {result && (() => {
             const y     = result.predicted_fiber_yield_kg_ha ?? result.predicted_yield ?? result.fiber_yield ?? result.yield ?? 0;
+            console.log('🎯 Display y value:', y, 'Type:', typeof y);
+            console.log('🎯 result.predicted_fiber_yield_kg_ha:', result.predicted_fiber_yield_kg_ha);
             const grade = getGrade(y);
             const fill  = Math.min(100, Math.max(0, (y / 1200) * 100));
             return (
@@ -345,7 +349,7 @@ export default function PredictPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-[11px] text-muted font-semibold uppercase tracking-widest">Predicted fiber yield</p>
-                      <p className="text-5xl font-extrabold text-ink mt-1 tabular-nums tracking-tight">{y}</p>
+                      <p className="text-5xl font-extrabold text-ink mt-1 tabular-nums tracking-tight">{Number(y).toFixed(1)}</p>
                       <p className="text-xs text-muted mt-1">kg / hectare</p>
                     </div>
                     <motion.span
