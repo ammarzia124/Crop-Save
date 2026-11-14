@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-const baseURL = (
-  import.meta.env.VITE_CROPSAVE_API_URL ||
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:8000'
-).replace(/\/+$/, '');
+// Hardcoded backend URL - env vars aren't reliable in Vercel builds
+const baseURL = 'https://backend-production-4f60.up.railway.app';
 
 export const cropSaveApi = axios.create({
   baseURL,
